@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(upload_to='avatars/')  # аватар
+    avatar = models.ImageField(upload_to='avatars/', blank=True)  # аватар
     sex = models.CharField(max_length=100, null=False)  # пол
     match = models.ManyToManyField('self', blank=True)  # совпадение симпатии
     outgoing_match_requests = models.ManyToManyField(
