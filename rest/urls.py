@@ -5,8 +5,9 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path('clients/create',
-         views.UserViewSet.as_view({'post': 'create'}), name="create"),
+         views.UserView.as_view(), name="create"),
     path('clients/auth/', include('rest_framework.urls')),
     path('clients/<int:pk>/match',
-         views.MatchRequestViewSet.as_view({'post': 'create'}), name="match"),
+         views.MatchRequestView.as_view(), name="match"),
+    path('list', views.UserListView.as_view(), name="users_list"),
 ]

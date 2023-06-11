@@ -4,26 +4,37 @@ from django.db import transaction
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import UserSerializer, MatchRequestSerializer
 from .models import User
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins, status
 from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView, ListAPIView
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the api index.")
+    return HttpResponse("Api index.")
 
 
-class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
+class UserView(CreateAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
         return User.objects.all()
 
 
-class MatchRequestViewSet(mixins.CreateModelMixin, GenericViewSet):
+class UserListView(ListAPIView):
+    serializer_class = UserSerializer
+    lookup_field = 'email'
+    queryset = User.objects.all()
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['sex', 'first_name', 'last_name']
+
+
+class MatchRequestView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = MatchRequestSerializer
 
