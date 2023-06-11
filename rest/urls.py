@@ -7,4 +7,6 @@ urlpatterns = [
     path('clients/create',
          views.UserViewSet.as_view({'post': 'create'}), name="create"),
     path('clients/auth/', include('rest_framework.urls')),
+    path('clients/<int:pk>/match',
+         views.MatchRequestViewSet.as_view({'post': 'create'}), name="match"),
 ]
