@@ -5,6 +5,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
+from django.contrib.gis.measure import D
 
 from .serializers import UserSerializer, MatchRequestSerializer
 from .models import User
@@ -25,13 +27,26 @@ class UserView(CreateAPIView):
         return User.objects.all()
 
 
+class UserFilter(filters.FilterSet):
+    within = filters.NumberFilter(
+        field_name='location', method='filter_within', label='Within (m)')
+
+    def filter_within(self, queryset, name, value):
+        location = self.request.user.location
+        return queryset.filter(location__distance_lte=(location, D(m=value)))
+
+    class Meta:
+        model = User
+        fields = ['sex', 'first_name', 'last_name']
+
+
 class UserListView(ListAPIView):
     serializer_class = UserSerializer
     lookup_field = 'email'
     queryset = User.objects.all()
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['sex', 'first_name', 'last_name']
+    filterset_class = UserFilter
 
 
 class MatchRequestView(CreateAPIView):

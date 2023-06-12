@@ -1,5 +1,6 @@
 from django.core import exceptions
 from rest_framework.serializers import Serializer, ModelSerializer
+from drf_extra_fields.geo_fields import PointField
 from rest_framework import serializers
 from .models import User
 
@@ -8,6 +9,7 @@ import django.contrib.auth.password_validation as validators
 
 class UserSerializer(ModelSerializer):
     email = serializers.EmailField(required=True)
+    location = PointField(required=False)
 
     def create(self, validated_data):
         """
@@ -39,7 +41,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'avatar', 'sex', 'first_name',
-                  'last_name', 'password', 'email']
+                  'last_name', 'password', 'email', 'location']
         read_only_fields = ['id']
         extra_kwargs = {'password': {'write_only': True,
                                      'style': {'input_type': 'password'}}, }
@@ -49,6 +51,7 @@ class MatchRequestSerializer(Serializer):
     """
     Валидация данных при отправке симпатии
     """
+
     def validate(self, data):
         assert 'to_user' in self.context, 'to_user should be passed in a context'
         value = self.context['to_user']

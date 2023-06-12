@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.gis.geos import Point
 
 
 def render_image_with_watermark(photo_path):
@@ -23,6 +25,8 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', blank=True)  # аватар
     sex = models.CharField(max_length=100, null=False)  # пол
     match = models.ManyToManyField('self', blank=True)  # совпадение симпатии
+    # местоположение юзера nullable невозможно из-за spatial_index
+    location = gis_models.PointField(default=Point(0, 0))
     outgoing_match_requests = models.ManyToManyField(
         'self', symmetrical=False, related_name='incoming_match_requests', blank=True)  # исходящие симпатии
     __original_avatar = None
